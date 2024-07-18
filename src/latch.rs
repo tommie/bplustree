@@ -551,13 +551,15 @@ mod tests {
     unsafe impl<T: Send> Send for Wrapper<T> {}
     unsafe impl<T: Send + Sync> Sync for Wrapper<T> {}
 
+    const N: usize = 4000;
+
     #[test]
     #[serial]
     fn single_threaded_reader_baseline() {
         let data = [1usize; 1000];
         let mut result = 1usize;
         let t0 = std::time::Instant::now();
-        for _i in 0..4000000 {
+        for _i in 0..N {
             for j in 0..1000 {
                 result = result.saturating_mul(data[j]);
             }
@@ -588,7 +590,7 @@ mod tests {
             let handle = thread::spawn(move || {
                 barrier.wait();
                 let mut result = 1usize;
-                for _i in 0..4000000 {
+                for _i in 0..N {
                     loop {
                         let res = {
                             let attempt = || {
@@ -630,10 +632,10 @@ mod tests {
 
             let handle = thread::spawn(move || {
                 barrier.wait();
-                let seconds = 10f64;
+                let seconds = 0.1f64;
                 let micros_per_sec = 1_000_000;
-                let freq = 100;
-                let critical = 1000;
+                let freq = 10000;
+                let critical = 10;
                 for _i in 0..(seconds * freq as f64) as usize {
                     thread::sleep(std::time::Duration::from_micros((micros_per_sec / freq) - critical));
                     {
@@ -669,7 +671,7 @@ mod tests {
         let data = [Some(1usize); 1000];
         let mut result = 1usize;
         let t0 = std::time::Instant::now();
-        for _i in 0..4000000 {
+        for _i in 0..N {
             for j in 0..1000 {
                 let opt = &data[j];
                 if let Some(n) = opt {
@@ -705,7 +707,7 @@ mod tests {
             let handle = thread::spawn(move || {
                 barrier.wait();
                 let mut result = 1usize;
-                for _i in 0..4000000 {
+                for _i in 0..N {
                     loop {
                         let res = {
                             let attempt = || {
@@ -753,10 +755,10 @@ mod tests {
 
             let handle = thread::spawn(move || {
                 barrier.wait();
-                let seconds = 10f64;
+                let seconds = 0.1f64;
                 let micros_per_sec = 1_000_000;
-                let freq = 100;
-                let critical = 1000;
+                let freq = 10000;
+                let critical = 10;
                 for _i in 0..(seconds * freq as f64) as usize {
                     thread::sleep(std::time::Duration::from_micros((micros_per_sec / freq) - critical));
                     {

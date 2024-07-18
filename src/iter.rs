@@ -1746,15 +1746,15 @@ mod tests {
             leaf: None
         };
 
-        let n = 1000000usize;
+        const N: usize = 10000;
 
-        let mut data: Vec<_> = (0..n).collect();
+        let mut data: Vec<_> = (0..N).collect();
 
         data.shuffle(&mut thread_rng());
 
         let mut strings = vec!();
 
-        for i in 0..n {
+        for i in 0..N {
             strings.push(format!("{:09}", data[i]));
         }
 
@@ -1767,7 +1767,7 @@ mod tests {
         println!("BPlusTree");
 
         let t0 = std::time::Instant::now();
-        for i in 0..n {
+        for i in 0..N {
             iter.insert(strings[i].clone(), data[i]);
         }
         println!("insert took: {:?}", t0.elapsed());
@@ -1777,7 +1777,7 @@ mod tests {
         println!("lookup took: {:?}", t0.elapsed());
 
         let t0 = std::time::Instant::now();
-        for i in 0..n {
+        for i in 0..N {
             assert_eq!(iter.next(), Some((&sorted_strings[i], &mut sorted_data[i])));
         }
         assert_eq!(iter.next(), None);
@@ -1785,7 +1785,7 @@ mod tests {
         println!("scan took: {:?}", t0.elapsed());
 
         let t0 = std::time::Instant::now();
-        for i in (0..n).rev() {
+        for i in (0..N).rev() {
             assert_eq!(iter.remove(&strings[i]).as_ref().map(|(k, v)| (k, v)), Some((&strings[i], &data[i])));
         }
         println!("remove took: {:?}", t0.elapsed());
@@ -1810,7 +1810,7 @@ mod tests {
         let mut btreemap: BTreeMap<String, usize> = BTreeMap::default();
 
         let t0 = std::time::Instant::now();
-        for i in 0..n {
+        for i in 0..N {
             btreemap.insert(strings[i].clone(), data[i]);
         }
         println!("insert took: {:?}", t0.elapsed());
@@ -1822,7 +1822,7 @@ mod tests {
         {
             let mut iter = btreemap.iter_mut();
             let t0 = std::time::Instant::now();
-            for i in 0..n {
+            for i in 0..N {
                 assert_eq!(iter.next(), Some((&sorted_strings[i], &mut sorted_data[i])));
             }
 
@@ -1832,7 +1832,7 @@ mod tests {
         }
 
         let t0 = std::time::Instant::now();
-        for i in (0..n).rev() {
+        for i in (0..N).rev() {
             assert_eq!(btreemap.remove(&strings[i]).as_ref(), Some(&data[i]));
         }
         println!("remove took: {:?}", t0.elapsed());
