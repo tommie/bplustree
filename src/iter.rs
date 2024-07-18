@@ -586,7 +586,7 @@ impl <'t, K: Clone + Ord, V, const IC: usize, const LC: usize> RawSharedIter<'t,
     /// assert_eq!(iter.next(), None);
     /// ```
     #[inline]
-    pub fn next(&mut self) -> Option<(&K, &V)> {
+    pub fn next(&mut self) -> Option<(&'t K, &'t V)> {
         loop {
             let opt = match self.leaf.as_ref() {
                 Some((guard, cursor)) => {
@@ -661,7 +661,7 @@ impl <'t, K: Clone + Ord, V, const IC: usize, const LC: usize> RawSharedIter<'t,
     /// assert_eq!(iter.prev(), None);
     /// ```
     #[inline]
-    pub fn prev(&mut self) -> Option<(&K, &V)> {
+    pub fn prev(&mut self) -> Option<(&'t K, &'t V)> {
         loop {
             let opt = match self.leaf.as_ref() {
                 Some((_guard, cursor)) => {
@@ -1443,7 +1443,7 @@ impl <'t, K: Clone + Ord, V, const IC: usize, const LC: usize> RawExclusiveIter<
     /// assert_eq!(iter.next(), None);
     /// ```
     #[inline]
-    pub fn next(&mut self) -> Option<(&K, &mut V)> {
+    pub fn next(&mut self) -> Option<(&'t K, &'t mut V)> {
         loop {
             let opt = match self.leaf.as_ref() {
                 Some((guard, cursor)) => {
@@ -1520,7 +1520,7 @@ impl <'t, K: Clone + Ord, V, const IC: usize, const LC: usize> RawExclusiveIter<
     /// assert_eq!(iter.prev(), None);
     /// ```
     #[inline]
-    pub fn prev(&mut self) -> Option<(&K, &mut V)> {
+    pub fn prev(&mut self) -> Option<(&'t K, &'t mut V)> {
         loop {
             let opt = match self.leaf.as_ref() {
                 Some((_guard, cursor)) => {

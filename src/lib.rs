@@ -1500,7 +1500,7 @@ impl<K: fmt::Debug, V: fmt::Debug, const LEAF_CAPACITY: usize> fmt::Debug for Le
     }
 }
 
-impl<K, V, const LEAF_CAPACITY: usize> LeafNode<K, V, LEAF_CAPACITY> {
+impl<'t, K, V, const LEAF_CAPACITY: usize> LeafNode<K, V, LEAF_CAPACITY> {
     pub fn new() -> LeafNode<K, V, LEAF_CAPACITY> {
         LeafNode {
             len: 0,
@@ -1560,23 +1560,23 @@ impl<K, V, const LEAF_CAPACITY: usize> LeafNode<K, V, LEAF_CAPACITY> {
     }
 
     #[inline]
-    pub(crate) fn value_at(&self, pos: u16) -> error::Result<&V> {
-        Ok(unsafe { self.values.get_unchecked(pos as usize) })
+    pub(crate) fn value_at(&self, pos: u16) -> error::Result<&'t V> {
+        Ok(unsafe { &*self.values.as_ptr().add(pos as usize) })
     }
 
     #[inline]
-    pub(crate) fn key_at(&self, pos: u16) -> error::Result<&K> {
-        Ok(unsafe { self.keys.get_unchecked(pos as usize) })
+    pub(crate) fn key_at(&self, pos: u16) -> error::Result<&'t K> {
+        Ok(unsafe { &*self.keys.as_ptr().add(pos as usize) })
     }
 
     #[inline]
-    pub(crate) fn kv_at(&self, pos: u16) -> error::Result<(&K, &V)> {
+    pub(crate) fn kv_at(&self, pos: u16) -> error::Result<(&'t K, &'t V)> {
         Ok((self.key_at(pos)?, self.value_at(pos)?))
     }
 
     #[inline]
-    pub(crate) fn kv_at_mut(&mut self, pos: u16) -> error::Result<(&K, &mut V)> {
-        Ok(unsafe { (self.keys.get_unchecked(pos as usize), self.values.get_unchecked_mut(pos as usize)) })
+    pub(crate) fn kv_at_mut(&mut self, pos: u16) -> error::Result<(&'t K, &'t mut V)> {
+        Ok(unsafe { (self.key_at(pos)?, &mut *self.values.as_mut_ptr().add(pos as usize)) })
     }
 
     #[inline]
@@ -2060,5 +2060,24 @@ mod tests {
         assert!(node.len == 0);
 
         assert!(node.lower_bound("0001") == (0, false));
+    }
+
+    #[test]
+    fn leaf_kv_lifetime() {
+        let node: LeafNode<_, _, 16> = LeafNode {
+            len: 3,
+            keys: smallvec!["0001".to_string()],
+            values: smallvec![1u64, 2, 4],
+            lower_fence: None,
+            upper_fence: None,
+            sample_key: None
+        };
+
+        let (k, v) = (|node: &LeafNode<_, _, 16>| {
+            (node.key_at(0).unwrap(), node.value_at(0).unwrap())
+        })(&node);
+
+        assert_eq!(k, "0001");
+        assert_eq!(*v, 1);
     }
 }
