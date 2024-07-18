@@ -29,8 +29,6 @@ pub mod latch;
 pub mod iter;
 #[cfg(test)]
 pub mod util;
-#[cfg(test)]
-pub mod bench;
 
 use latch::{HybridLatch, OptimisticGuard, SharedGuard, ExclusiveGuard, HybridGuard};
 
