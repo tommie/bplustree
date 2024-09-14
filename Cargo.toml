@@ -12,8 +12,8 @@ keywords = ["b-tree", "tree", "concurrent", "map"]
 categories = ["concurrency", "data-structures"]
 
 [dependencies]
-parking_lot = "0.11.1"
-parking_lot_core = "0.8.3"
+parking_lot = "0.12.3"
+parking_lot_core = "0.9.10"
 thiserror = "1"
 crossbeam-epoch = "0.9"
 smallvec = { version = "1.6", features = ["const_generics"]}
@@ -22,4 +22,4 @@ smallvec = { version = "1.6", features = ["const_generics"]}
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
 rand = "0.8"
-serial_test = "0.5"
+serial_test = "3.1.1"
