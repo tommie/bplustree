@@ -30,7 +30,7 @@ enum LeafResult {
 enum JumpResult {
     Ok,
     End,
-    Err(error::Error)
+    Err(())
 }
 
 macro_rules! tp {
@@ -294,8 +294,8 @@ impl <'t, K: Clone + Ord, V, const IC: usize, const LC: usize> RawSharedIter<'t,
             Ok(Outcome::End) => {
                 return JumpResult::End;
             }
-            Err(e) => {
-                return JumpResult::Err(e);
+            Err(_) => {
+                return JumpResult::Err(());
             }
         }
     }
@@ -982,8 +982,8 @@ impl <'t, K: Clone + Ord, V, const IC: usize, const LC: usize> RawExclusiveIter<
             Ok(Outcome::End) => {
                 return JumpResult::End;
             }
-            Err(e) => {
-                return JumpResult::Err(e);
+            Err(_) => {
+                return JumpResult::Err(());
             }
         }
     }
